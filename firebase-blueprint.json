@@ -1,0 +1,86 @@
+{
+  "entities": {
+    "OwnerAccessRequest": {
+      "title": "OwnerAccessRequest",
+      "description": "Request for owner dashboard access approval",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "denied"] },
+        "createdAt": { "type": "string" },
+        "requestedAt": { "type": "string" },
+        "respondedAt": { "type": "string" },
+        "requesterEmail": { "type": "string" }
+      },
+      "required": ["status"]
+    },
+    "StoreSettings": {
+      "title": "StoreSettings",
+      "description": "Bakery contact and opening hours configuration",
+      "type": "object",
+      "properties": {
+        "contactPhone": { "type": "string" },
+        "address": { "type": "string" },
+        "lowStockThreshold": { "type": "number" },
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "MenuCatalog": {
+      "title": "MenuCatalog",
+      "description": "Active bakery catalog items and stock levels",
+      "type": "object",
+      "properties": {
+        "updatedAt": { "type": "string" }
+      }
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Customer bakery pre-order record",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "totalAmount": { "type": "number" },
+        "status": { "type": "string" },
+        "customerName": { "type": "string" },
+        "customerEmail": { "type": "string" },
+        "customerPhone": { "type": "string" }
+      },
+      "required": ["id", "totalAmount", "status"]
+    },
+    "Review": {
+      "title": "Review",
+      "description": "Customer feedback review",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "userName": { "type": "string" },
+        "rating": { "type": "number" },
+        "comment": { "type": "string" },
+        "date": { "type": "string" }
+      },
+      "required": ["id", "userName", "rating", "comment"]
+    }
+  },
+  "firestore": {
+    "/owner_access_requests/{requestId}": {
+      "schema": "OwnerAccessRequest",
+      "description": "Owner approval access requests"
+    },
+    "/store_settings/{settingsId}": {
+      "schema": "StoreSettings",
+      "description": "Live store configuration"
+    },
+    "/menu_catalog/{catalogId}": {
+      "schema": "MenuCatalog",
+      "description": "Live menu items catalog"
+    },
+    "/orders/{orderId}": {
+      "schema": "Order",
+      "description": "Customer pre-orders"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "Review",
+      "description": "Customer reviews"
+    }
+  }
+}

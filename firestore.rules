@@ -1,0 +1,55 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isValidOwnerAccessRequest(data) {
+      return data.keys().hasAll(['status']) 
+        && data.keys().hasOnly(['id', 'status', 'requestedAt', 'respondedAt', 'requesterEmail', 'createdAt', 'updatedAt'])
+        && data.status in ['pending', 'approved', 'denied'];
+    }
+
+    match /owner_access_requests/{requestId} {
+      allow get: if isValidId(requestId);
+      allow create: if isValidId(requestId) && isValidOwnerAccessRequest(incoming());
+      allow update: if isValidId(requestId) && isValidOwnerAccessRequest(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'respondedAt']);
+      allow list, delete: if false;
+    }
+
+    match /store_settings/{settingsId} {
+      allow get, list: if isValidId(settingsId);
+      allow create, update: if isValidId(settingsId);
+    }
+
+    match /menu_catalog/{catalogId} {
+      allow get, list: if isValidId(catalogId);
+      allow create, update: if isValidId(catalogId);
+    }
+
+    match /orders/{orderId} {
+      allow get, list: if isValidId(orderId);
+      allow create, update, delete: if isValidId(orderId);
+    }
+
+    match /reviews/{reviewId} {
+      allow get, list: if isValidId(reviewId);
+      allow create, update: if isValidId(reviewId);
+    }
+  }
+}
